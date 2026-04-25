@@ -3,22 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bangalow SC — Fixture Viewer 2026</title>
+<title>Bangalow SC — 2026</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
   header { background: #1a3a2a; color: #fff; padding: 1.25rem 2rem; display: flex; align-items: center; gap: 1rem; }
   header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
   header span { font-size: 12px; opacity: 0.6; margin-left: auto; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-  .tab-btn { padding: 9px 22px; border: 1.5px solid #ccc; border-radius: 6px; background: #fff; color: #555; cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.15s; }
-  .tab-btn:hover { border-color: #1a3a2a; color: #1a3a2a; }
-  .tab-btn.active { background: #1a3a2a; color: #fff; border-color: #1a3a2a; font-weight: 500; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd; padding-bottom: 0; }
+  .tab-btn { padding: 9px 20px; border: none; border-bottom: 3px solid transparent; background: transparent; color: #888; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; margin-bottom: -2px; transition: all 0.15s; }
+  .tab-btn:hover { color: #1a3a2a; }
+  .tab-btn.active { color: #1a3a2a; border-bottom-color: #1a3a2a; }
+
+  /* CONTROLS */
   .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; flex-wrap: wrap; }
   .controls label { font-size: 13px; color: #666; font-weight: 500; }
   select { font-family: inherit; font-size: 13px; padding: 7px 12px; border: 1.5px solid #ccc; border-radius: 6px; background: #fff; color: #1a1a1a; cursor: pointer; outline: none; }
   select:focus { border-color: #1a3a2a; }
+
+  /* SCHEDULE GRID */
   .section-wrap { overflow-x: auto; margin-bottom: 1.75rem; }
   .day-label { font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.5rem; padding-bottom: 4px; border-bottom: 1.5px solid #ddd; }
   .day-label:first-child { margin-top: 0; }
@@ -35,51 +41,84 @@
   .cell-home { font-size: 11px; color: #1a1a1a; line-height: 1.3; font-weight: 600; }
   .cell-vs { font-size: 9px; color: #bbb; }
   .cell-visit { font-size: 11px; color: #444; line-height: 1.3; }
-  .field-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-  .f-jsf { background: #dbeeff; color: #1a5fa0; }
-  .f-b2 { background: #fde8f0; color: #a0285a; }
-  .f-b3 { background: #e2f5d8; color: #2a6e14; }
-  .f-b4 { background: #ede8fd; color: #4a35a8; }
-  .f-b5 { background: #fef3d8; color: #8a5a08; }
-  .f-b6 { background: #fde8de; color: #8a3a14; }
-  .f-b7 { background: #d8f5ed; color: #0a6045; }
-  .f-b8 { background: #fde8e8; color: #8a2020; }
-  .f-b9 { background: #eeecea; color: #484440; }
-  .f-b10 { background: #fef0d8; color: #7a4808; }
   .no-field-note { font-size: 11px; color: #888; margin-top: 8px; margin-bottom: 12px; padding: 8px 12px; background: #fff8ee; border-left: 3px solid #f0c060; border-radius: 0 4px 4px 0; }
-  .compare-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
-  @media (max-width: 700px) { .compare-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /* FIELD BADGES */
+  .field-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+  .f-jsf{background:#dbeeff;color:#1a5fa0}.f-b2{background:#fde8f0;color:#a0285a}.f-b3{background:#e2f5d8;color:#2a6e14}
+  .f-b4{background:#ede8fd;color:#4a35a8}.f-b5{background:#fef3d8;color:#8a5a08}.f-b6{background:#fde8de;color:#8a3a14}
+  .f-b7{background:#d8f5ed;color:#0a6045}.f-b8{background:#fde8e8;color:#8a2020}.f-b9{background:#eeecea;color:#484440}.f-b10{background:#fef0d8;color:#7a4808}
+  .bg-jsf{background:#dbeeff}.bg-b2{background:#fde8f0}.bg-b3{background:#e2f5d8}.bg-b4{background:#ede8fd}.bg-b5{background:#fef3d8}
+  .bg-b6{background:#fde8de}.bg-b7{background:#d8f5ed}.bg-b8{background:#fde8e8}.bg-b9{background:#eeecea}.bg-b10{background:#fef0d8}
+  .c-jsf{color:#1a5fa0}.c-b2{color:#a0285a}.c-b3{color:#2a6e14}.c-b4{color:#4a35a8}.c-b5{color:#8a5a08}
+  .c-b6{color:#8a3a14}.c-b7{color:#0a6045}.c-b8{color:#8a2020}.c-b9{color:#484440}.c-b10{color:#7a4808}
+
+  /* COMPARE */
+  .compare-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.5rem; }
+  @media(max-width:700px){ .compare-grid { grid-template-columns: repeat(2,1fr); } }
   .compare-select-wrap { display: flex; flex-direction: column; gap: 5px; }
-  .compare-select-wrap label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .compare-select-wrap label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
   .compare-select-wrap select { width: 100%; font-size: 12px; }
-  .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .compare-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.09); font-size: 12px; }
   .compare-table th { padding: 8px 10px; font-size: 11px; font-weight: 600; color: #555; background: #f0efe9; border-bottom: 1.5px solid #ddd; text-align: left; }
   .compare-table td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
   .compare-table tr:last-child td { border-bottom: none; }
   .compare-table tr:hover td { background: #fafaf7; }
   .week-cell { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; background: #f7f6f1 !important; }
-  .fixture-card { padding: 2px 0; }
   .fixture-card .opp { font-size: 12px; color: #1a1a1a; line-height: 1.4; font-weight: 500; }
   .fixture-card .meta { font-size: 10px; color: #888; margin-top: 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   .away-cell { font-size: 12px; color: #bbb; font-style: italic; }
   .home-tag { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: #e2f5d8; color: #2a6e14; font-weight: 600; }
   .away-tag { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: #eee; color: #666; font-weight: 600; }
+
+  /* FIELD REPORT */
+  .summary-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .card { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 4px; }
+  .card .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
+  .card .count { font-size: 26px; font-weight: 700; line-height: 1; }
+  .card .sub { font-size: 11px; color: #888; }
+  .card.total { background: #1a3a2a; color: #fff; }
+  .card.total .sub { color: rgba(255,255,255,0.6); }
+  .report-h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin: 2rem 0 0.75rem; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+  .report-h2:first-child { margin-top: 0; }
+  .report-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.09); font-size: 12px; }
+  .report-table thead tr { background: #2d5040; color: #fff; }
+  .report-table thead th { padding: 9px 10px; font-size: 10px; font-weight: 600; text-align: center; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .report-table thead th.label-col { text-align: left; min-width: 130px; }
+  .report-table tbody tr { border-bottom: 1px solid #eee; }
+  .report-table tbody tr:last-child { border-bottom: none; }
+  .report-table tbody tr:hover td { background: #fafaf7 !important; }
+  .report-table tbody td { padding: 8px 10px; text-align: center; vertical-align: middle; }
+  .report-table tbody td.label-col { text-align: left; font-weight: 500; color: #444; white-space: nowrap; padding-left: 14px; }
+  .report-table tbody td.day-indent { padding-left: 28px; font-weight: 400; color: #666; font-size: 11px; text-align: left; }
+  .report-table tbody td.zero { color: #ddd; }
+  .report-table tbody td.row-total { font-weight: 700; background: #f7f6f1; color: #1a3a2a; }
+  .report-table tbody tr.week-row td { background: #f0efe9; font-weight: 600; }
+  .report-table tbody tr.week-row td.label-col { color: #1a3a2a; }
+  .report-table tbody tr.grand-total td { background: #1a3a2a !important; color: #fff !important; font-weight: 700; font-size: 13px; }
+  .pill { display: inline-block; min-width: 28px; padding: 2px 6px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+  @media print {
+    header, .report-table thead tr, .report-table tbody tr.grand-total td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tabs { display: none; }
+  }
 </style>
 </head>
 <body>
-
 <header>
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="opacity:0.8"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><path d="M12 2C12 2 8 7 8 12C8 17 12 22 12 22" stroke="white" stroke-width="1.5"/><path d="M12 2C12 2 16 7 16 12C16 17 12 22 12 22" stroke="white" stroke-width="1.5"/><path d="M2 12H22" stroke="white" stroke-width="1.5"/></svg>
-  <h1>Bangalow SC — Fixture Viewer 2026</h1>
-  <span>Created from fixture report 22 Apr 2026</span>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="opacity:.8"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><path d="M12 2C12 2 8 7 8 12C8 17 12 22 12 22" stroke="white" stroke-width="1.5"/><path d="M12 2C12 2 16 7 16 12C16 17 12 22 12 22" stroke="white" stroke-width="1.5"/><path d="M2 12H22" stroke="white" stroke-width="1.5"/></svg>
+  <h1>Bangalow SC — 2026</h1>
+  <span>Fixture report 22 Apr 2026 · Verified</span>
 </header>
 
 <div class="container">
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('schedule')">Game week schedule</button>
     <button class="tab-btn" onclick="showTab('compare')">Team comparison</button>
+    <button class="tab-btn" onclick="showTab('report')">Field usage report</button>
   </div>
 
+  <!-- SCHEDULE TAB -->
   <div id="tab-schedule">
     <div class="controls">
       <label>Game week:</label>
@@ -88,6 +127,7 @@
     <div id="schedule-out"></div>
   </div>
 
+  <!-- COMPARE TAB -->
   <div id="tab-compare" style="display:none">
     <div class="compare-grid" id="team-selects"></div>
     <div class="section-wrap">
@@ -97,301 +137,303 @@
       </table>
     </div>
   </div>
+
+  <!-- FIELD REPORT TAB -->
+  <div id="tab-report" style="display:none">
+    <p class="report-h2" style="margin-top:0">Total games per field (all weeks)</p>
+    <div class="summary-cards">
+      <div class="card"><span class="field-label c-b3">Bang 3</span><span class="count c-b3">14</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b4">Bang 4</span><span class="count c-b4">12</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b5">Bang 5</span><span class="count c-b5">10</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b6">Bang 6</span><span class="count c-b6">9</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b7">Bang 7</span><span class="count c-b7">18</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b8">Bang 8</span><span class="count c-b8">14</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b9">Bang 9</span><span class="count c-b9">17</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b10">Bang 10</span><span class="count c-b10">12</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-jsf">JSF</span><span class="count c-jsf">51</span><span class="sub">games</span></div>
+      <div class="card"><span class="field-label c-b2">Bang 2</span><span class="count c-b2">3</span><span class="sub">games</span></div>
+      <div class="card total"><span class="field-label">All fields</span><span class="count">160</span><span class="sub">total games</span></div>
+    </div>
+    <p class="report-h2">Games by game week, day and field</p>
+    <div class="section-wrap">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th class="label-col">Week / Day</th>
+            <th>B3</th><th>B4</th><th>B5</th><th>B6</th><th>B7</th><th>B8</th><th>B9</th><th>B10</th><th>JSF</th><th>B2</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="report-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
-const RAW = [
-  {comp:"Men's League 7",date:"Sat 2-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Alstonville"},
-  {comp:"Men's League 1",date:"Sat 2-May",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Alsonville"},
-  {comp:"Age 8 Bos",date:"Sat 2-May",time:"9:00 AM",field:"Bang8",home:"Bangalow Terriers",visit:"Byron Bay Panthers"},
-  {comp:"Age 8 McGree",date:"Sat 2-May",time:"9:30 AM",field:"Bang7",home:"Bangalow Beagles",visit:"TEBFC Narwhals"},
-  {comp:"Age 12 Div. 1",date:"Sat 2-May",time:"10:30 AM",field:"JSF",home:"Bangalow Black",visit:"Bangalow Blue"},
-  {comp:"Men's League 3",date:"Sat 2-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Lennox Head"},
-  {comp:"Age 13 Div. 2 North",date:"Sat 9-May",time:"9:00 AM",field:"JSF",home:"Bangalow",visit:"Alstonville Black"},
-  {comp:"Age 15 Div. 2",date:"Sat 9-May",time:"9:00 AM",field:"Bang2",home:"Bangalow",visit:"Lennox Head"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 9-May",time:"9:00 AM",field:"Bang7",home:"Bangalow Dingoes",visit:"Byron Bay Wildcats"},
-  {comp:"Age 5 Bos",date:"Sat 9-May",time:"9:00 AM",field:"Bang3",home:"Bangalow",visit:"Lennox Wobbegongs"},
-  {comp:"Age 6 Burgess",date:"Sat 9-May",time:"9:00 AM",field:"Bang4",home:"Bangalow Heelers",visit:"Eureka"},
-  {comp:"Age 6 Burgess",date:"Sat 9-May",time:"9:00 AM",field:"Bang5",home:"Bangalow Kelpies",visit:"Byron Bay Tigers"},
-  {comp:"Age 6 Metcalfe",date:"Sat 9-May",time:"9:00 AM",field:"Bang6",home:"Bangalow Terriers",visit:"Byron Bay Panthers"},
-  {comp:"Girls Age 10 Foord",date:"Sat 9-May",time:"9:00 AM",field:"Bang9",home:"Bangalow Huskies",visit:"MBVFC"},
-  {comp:"Girls Age 10 Foord",date:"Sat 9-May",time:"9:00 AM",field:"Bang10",home:"Bangalow Dingoes",visit:"Byron Bay Leopards"},
-  {comp:"Girls Age 9 Kerr",date:"Sat 9-May",time:"9:00 AM",field:"Bang8",home:"Bangalow",visit:"Lennox Head"},
-  {comp:"Girls Age 6 Raso",date:"Sat 9-May",time:"10:00 AM",field:"Bang6",home:"Bangalow",visit:"MBVFC Blue"},
-  {comp:"Age 7 Burgess",date:"Sat 9-May",time:"10:00 AM",field:"Bang4",home:"Bangalow Kelpies",visit:"Byron Bay Cougars"},
-  {comp:"Age 8 Bos",date:"Sat 9-May",time:"10:00 AM",field:"Bang8",home:"Bangalow Terriers",visit:"Eureka"},
-  {comp:"Age 9 Irvine",date:"Sat 9-May",time:"10:00 AM",field:"Bang7",home:"Bangalow Terriers",visit:"Pottsville Jaguars"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 9-May",time:"10:00 AM",field:"Bang5",home:"Bangalow Huskies",visit:"MBVFC"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 9-May",time:"10:00 AM",field:"Bang3",home:"Bangalow Dingoes",visit:"Byron Bay Wildcats"},
-  {comp:"Age 10 McGree",date:"Sat 9-May",time:"10:10 AM",field:"Bang10",home:"Bangalow",visit:"Alstonville Magpies"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 9-May",time:"10:10 AM",field:"Bang9",home:"Bangalow",visit:"MBVFC"},
-  {comp:"Age 12 Div. 1",date:"Sat 9-May",time:"10:30 AM",field:"JSF",home:"Bangalow Blue",visit:"Goonellabah"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 9-May",time:"11:00 AM",field:"Bang7",home:"Bangalow Huskies",visit:"Pottsville Beach"},
-  {comp:"Age 7 Burgess",date:"Sat 9-May",time:"11:00 AM",field:"Bang3",home:"Bangalow Terriers",visit:"Lennox Wobbegongs"},
-  {comp:"Age 7 Metcalfe",date:"Sat 9-May",time:"11:00 AM",field:"Bang4",home:"Bangalow Heelers",visit:"Alstonville Stingrays"},
-  {comp:"Age 9 Irvine",date:"Sat 9-May",time:"11:00 AM",field:"Bang8",home:"Bangalow Heelers",visit:"MBVFC Blue"},
-  {comp:"Age 10/11 SAP",date:"Sat 9-May",time:"11:20 AM",field:"Bang10",home:"Bangalow 11 SAP",visit:"Pottsville Beach 10 SAP"},
-  {comp:"Age 10/11 SAP",date:"Sat 9-May",time:"11:20 AM",field:"Bang9",home:"Bangalow 10 SAP",visit:"MBVFC 11 SAP"},
-  {comp:"Men's League 7",date:"Sat 9-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Alstonville"},
-  {comp:"Men's League 4",date:"Sat 9-May",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Lennox Head"},
-  {comp:"Girls Age 12",date:"Sun 10-May",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"Goonellabah"},
-  {comp:"Girls Age 15",date:"Sun 10-May",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Casino RSM Cobras"},
-  {comp:"Women's League 3",date:"Sun 10-May",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"Richmond Rovers"},
-  {comp:"Women's Championship League",date:"Sun 10-May",time:"2:30 PM",field:"JSF",home:"Bangalow",visit:"Casino RSM Cobras"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 16-May",time:"9:00 AM",field:"Bang7",home:"Bangalow Dingoes",visit:"Bangalow Huskies"},
-  {comp:"Age 6 Burgess",date:"Sat 16-May",time:"9:00 AM",field:"Bang4",home:"Bangalow Kelpies",visit:"Lennox Copper Sharks"},
-  {comp:"Age 6 Metcalfe",date:"Sat 16-May",time:"9:00 AM",field:"Bang3",home:"Bangalow Terriers",visit:"Lennox Hammerheads"},
-  {comp:"Age 7 Burgess",date:"Sat 16-May",time:"9:00 AM",field:"Bang6",home:"Bangalow Terriers",visit:"Bangalow Kelpies"},
-  {comp:"Age 7 Metcalfe",date:"Sat 16-May",time:"9:00 AM",field:"Bang5",home:"Bangalow Heelers",visit:"Lennox Great White Sharks"},
-  {comp:"Age 8 Bos",date:"Sat 16-May",time:"9:00 AM",field:"Bang8",home:"Bangalow Terriers",visit:"Bangalow Heelers"},
-  {comp:"Girls Age 10 Foord",date:"Sat 16-May",time:"9:00 AM",field:"Bang9",home:"Bangalow Dingoes",visit:"Bangalow Huskies"},
-  {comp:"Age 8 McGree",date:"Sat 16-May",time:"10:00 AM",field:"Bang7",home:"Bangalow Beagles",visit:"TEBFC Swordfish"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 16-May",time:"10:00 AM",field:"Bang3",home:"Bangalow Dingoes",visit:"Shores United"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 16-May",time:"10:10 AM",field:"Bang9",home:"Bangalow",visit:"Shores United"},
-  {comp:"Age 13 Div. 2 North",date:"Sat 16-May",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Men's League 7",date:"Sat 16-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Ballina"},
-  {comp:"Men's League 1",date:"Sat 16-May",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"MBVFC"},
-  {comp:"Age 15 Div. 2",date:"Sun 17-May",time:"9:00 AM",field:"JSF",home:"Bangalow",visit:"MBVFC"},
-  {comp:"Age 13 Div. 2 North",date:"Sun 17-May",time:"10:30 AM",field:"JSF",home:"Bangalow",visit:"Ballina"},
-  {comp:"Girls Age 12",date:"Sun 17-May",time:"11:50 AM",field:"JSF",home:"Bangalow",visit:"Pottsville Beach"},
-  {comp:"Girls Age 6 Raso",date:"Sat 23-May",time:"9:00 AM",field:"Bang4",home:"Bangalow",visit:"Lennox Angel Sharks"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 23-May",time:"9:00 AM",field:"Bang7",home:"Bangalow Huskies",visit:"Byron Bay Wildcats"},
-  {comp:"Age 5 Bos",date:"Sat 23-May",time:"9:00 AM",field:"Bang3",home:"Bangalow",visit:"Byron Bay Cougars"},
-  {comp:"Age 6 Burgess",date:"Sat 23-May",time:"9:00 AM",field:"Bang6",home:"Bangalow Heelers",visit:"Bangalow Kelpies"},
-  {comp:"Age 8 Bos",date:"Sat 23-May",time:"9:00 AM",field:"Bang8",home:"Bangalow Heelers",visit:"Eureka"},
-  {comp:"Girls Age 10 Foord",date:"Sat 23-May",time:"9:00 AM",field:"Bang9",home:"Bangalow Huskies",visit:"Byron Bay Leopards"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 23-May",time:"9:00 AM",field:"Bang10",home:"Bangalow",visit:"Byron Bay Wildcats"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 23-May",time:"9:00 AM",field:"Bang5",home:"Bangalow Huskies",visit:"Bangalow Dingoes"},
-  {comp:"Age 12 Div. 1",date:"Sat 23-May",time:"9:30 AM",field:"Bang2",home:"Bangalow Blue",visit:"Lennox Head"},
-  {comp:"Age 15 Div. 2",date:"Sat 23-May",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"Lismore Thistles"},
-  {comp:"Age 7 Burgess",date:"Sat 23-May",time:"10:00 AM",field:"Bang3",home:"Bangalow Kelpies",visit:"Lennox Wobbegongs"},
-  {comp:"Age 9 Irvine",date:"Sat 23-May",time:"10:00 AM",field:"Bang8",home:"Bangalow Heelers",visit:"Pottsville Panthers"},
-  {comp:"Girls Age 9 Kerr",date:"Sat 23-May",time:"10:00 AM",field:"Bang7",home:"Bangalow",visit:"Alstonville Komodos"},
-  {comp:"Age 10 McGree",date:"Sat 23-May",time:"10:10 AM",field:"Bang9",home:"Bangalow",visit:"Lennox Wobbegongs"},
-  {comp:"Age 10/11 SAP",date:"Sat 23-May",time:"10:10 AM",field:"Bang10",home:"Bangalow 11 SAP",visit:"MBVFC 11 SAP"},
-  {comp:"Age 12 Div. 1",date:"Sat 23-May",time:"11:00 AM",field:"JSF",home:"Bangalow Black",visit:"Goonellabah"},
-  {comp:"Age 13 Div. 2 North",date:"Sat 23-May",time:"11:00 AM",field:"Bang2",home:"Bangalow",visit:"Tumbulgum"},
-  {comp:"Age 9 Irvine",date:"Sat 23-May",time:"11:00 AM",field:"Bang7",home:"Bangalow Terriers",visit:"Shores United Sharks"},
-  {comp:"Age 10/11 SAP",date:"Sat 23-May",time:"11:20 AM",field:"Bang9",home:"Bangalow 10 SAP",visit:"Byron Bay 11 SAP"},
-  {comp:"Men's League 4",date:"Sat 23-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Alstonville"},
-  {comp:"Men's League 3",date:"Sat 23-May",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Goonellabah"},
-  {comp:"Girls Age 15",date:"Sun 24-May",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"South Lismore"},
-  {comp:"Girls Age 12",date:"Sun 24-May",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Lennox Head Bluesharks"},
-  {comp:"Women's Championship League",date:"Sun 24-May",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"South Lismore"},
-  {comp:"Women's League 3",date:"Sun 24-May",time:"2:30 PM",field:"JSF",home:"Bangalow",visit:"Woodburn"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 30-May",time:"9:00 AM",field:"",home:"Bangalow Dingoes",visit:"Bye"},
-  {comp:"Age 5 Bos",date:"Sat 30-May",time:"9:00 AM",field:"Bang4",home:"Bangalow",visit:"Ballina"},
-  {comp:"Age 6 Burgess",date:"Sat 30-May",time:"9:00 AM",field:"Bang3",home:"Bangalow Kelpies",visit:"Suffolk Park"},
-  {comp:"Age 6 Metcalfe",date:"Sat 30-May",time:"9:00 AM",field:"Bang6",home:"Bangalow Terriers",visit:"Byron Bay Lions"},
-  {comp:"Age 7 Burgess",date:"Sat 30-May",time:"9:00 AM",field:"Bang5",home:"Bangalow Kelpies",visit:"Lennox Whalers"},
-  {comp:"Age 8 McGree",date:"Sat 30-May",time:"9:00 AM",field:"Bang8",home:"Bangalow Beagles",visit:"Byron Bay Cougars"},
-  {comp:"Girls Age 10 Foord",date:"Sat 30-May",time:"9:00 AM",field:"Bang9",home:"Bangalow Huskies",visit:"Byron Bay Lynx"},
-  {comp:"Age 9 Irvine",date:"Sat 30-May",time:"9:00 AM",field:"Bang7",home:"Bangalow Terriers",visit:"Bangalow Heelers"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 30-May",time:"9:00 AM",field:"Bang10",home:"Bangalow",visit:"Byron Bay Leopards"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 30-May",time:"9:00 AM",field:"",home:"Bangalow Dingoes",visit:"Bye"},
-  {comp:"Age 7 Burgess",date:"Sat 30-May",time:"10:00 AM",field:"Bang3",home:"Bangalow Terriers",visit:"Suffolk Park"},
-  {comp:"Age 7 Metcalfe",date:"Sat 30-May",time:"10:00 AM",field:"Bang4",home:"Bangalow Heelers",visit:"Lennox Tiger Sharks"},
-  {comp:"Age 8 Bos",date:"Sat 30-May",time:"10:00 AM",field:"Bang7",home:"Bangalow Heelers",visit:"Shores United Crocs"},
-  {comp:"Age 8 Bos",date:"Sat 30-May",time:"10:00 AM",field:"Bang8",home:"Bangalow Terriers",visit:"Lennox Wobbegongs"},
-  {comp:"Age 10 McGree",date:"Sat 30-May",time:"10:10 AM",field:"Bang9",home:"Bangalow",visit:"Alstonville Lorikeets"},
-  {comp:"Girls Age 10 Foord",date:"Sat 30-May",time:"10:10 AM",field:"Bang10",home:"Bangalow Dingoes",visit:"Pottsville Wildcats"},
-  {comp:"Age 15 Div. 2",date:"Sat 30-May",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Richmond Rovers"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 30-May",time:"11:00 AM",field:"Bang7",home:"Bangalow Huskies",visit:"Shores United"},
-  {comp:"Age 10/11 SAP",date:"Sat 30-May",time:"11:20 AM",field:"Bang9",home:"Bangalow 10 SAP",visit:"Ballina 11 SAP"},
-  {comp:"Men's League 7",date:"Sat 30-May",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"TEBFC"},
-  {comp:"Men's League 4",date:"Sat 30-May",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Lismore Workers"},
-  {comp:"Age 13 Div. 2 North",date:"Sun 31-May",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Women's League 3",date:"Sun 31-May",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"Pottsville Beach"},
-  {comp:"Age 12 Div. 1",date:"Sat 13-Jun",time:"9:00 AM",field:"JSF",home:"Bangalow Blue",visit:"Shores United"},
-  {comp:"Girls Age 6 Raso",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang3",home:"Bangalow",visit:"MBVFC Gold"},
-  {comp:"Age 10/11 SAP",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang9",home:"Bangalow 11 SAP",visit:"Bangalow 10 SAP"},
-  {comp:"Age 6 Burgess",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang5",home:"Bangalow Heelers",visit:"Byron Bay Tigers"},
-  {comp:"Age 9 Irvine",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang8",home:"Bangalow Heelers",visit:"Shores United Sharks"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang4",home:"Bangalow Huskies",visit:"Byron Bay Wildcats"},
-  {comp:"Girls Age 9 Kerr",date:"Sat 13-Jun",time:"9:00 AM",field:"Bang7",home:"Bangalow",visit:"TEBFC"},
-  {comp:"Age 12 Div. 1",date:"Sat 13-Jun",time:"10:20 AM",field:"JSF",home:"Bangalow Black",visit:"Lennox Head"},
-  {comp:"Age 13 Div. 2 North",date:"Sat 13-Jun",time:"11:40 AM",field:"JSF",home:"Bangalow",visit:"Pottsville Beach"},
-  {comp:"Men's League 3",date:"Sat 13-Jun",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Men's League 1",date:"Sat 13-Jun",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Italo Stars"},
-  {comp:"Girls Age 15",date:"Sun 14-Jun",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"Lennox Head 1"},
-  {comp:"Girls Age 12",date:"Sun 14-Jun",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Alstonville"},
-  {comp:"Women's League 3",date:"Sun 14-Jun",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"MBVFC"},
-  {comp:"Women's Championship League",date:"Sun 14-Jun",time:"2:30 PM",field:"JSF",home:"Bangalow",visit:"Shores United"},
-  {comp:"Age 12 Div. 1",date:"Sat 20-Jun",time:"9:00 AM",field:"",home:"Bangalow Blue",visit:"Bye"},
-  {comp:"Age 15 Div. 2",date:"Sat 20-Jun",time:"9:00 AM",field:"JSF",home:"Bangalow",visit:"Alstonville"},
-  {comp:"Girls Age 6 Raso",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang3",home:"Bangalow",visit:"Byron Bay Wildcats"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang7",home:"Bangalow Huskies",visit:"Byron Bay Lynx"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang8",home:"Bangalow Dingoes",visit:"MBVFC"},
-  {comp:"Age 10 McGree",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang9",home:"Bangalow",visit:"Eureka Koalas"},
-  {comp:"Age 6 Burgess",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang4",home:"Bangalow Kelpies",visit:"Eureka"},
-  {comp:"Age 7 Burgess",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang6",home:"Bangalow Kelpies",visit:"Byron Bay Tigers"},
-  {comp:"Girls Age 10 Foord",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang10",home:"Bangalow Huskies",visit:"Byron Bay Wildcats"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 20-Jun",time:"9:00 AM",field:"",home:"Bangalow",visit:"Bye"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 20-Jun",time:"9:00 AM",field:"",home:"Bangalow Huskies",visit:"Bye"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 20-Jun",time:"9:00 AM",field:"Bang5",home:"Bangalow Dingoes",visit:"MBVFC"},
-  {comp:"Age 6 Burgess",date:"Sat 20-Jun",time:"10:00 AM",field:"Bang3",home:"Bangalow Heelers",visit:"Suffolk Park"},
-  {comp:"Age 6 Metcalfe",date:"Sat 20-Jun",time:"10:00 AM",field:"Bang6",home:"Bangalow Terriers",visit:"Lennox Goblin Sharks"},
-  {comp:"Age 7 Burgess",date:"Sat 20-Jun",time:"10:00 AM",field:"Bang4",home:"Bangalow Terriers",visit:"Byron Bay Panthers"},
-  {comp:"Age 7 Metcalfe",date:"Sat 20-Jun",time:"10:00 AM",field:"Bang5",home:"Bangalow Heelers",visit:"Alstonville Swordfish"},
-  {comp:"Girls Age 9 Kerr",date:"Sat 20-Jun",time:"10:00 AM",field:"Bang7",home:"Bangalow",visit:"Alstonville Blue Tongues"},
-  {comp:"Age 10/11 SAP",date:"Sat 20-Jun",time:"10:10 AM",field:"Bang9",home:"Bangalow 10 SAP",visit:"Pottsville Beach 10 SAP"},
-  {comp:"Girls Age 10 Foord",date:"Sat 20-Jun",time:"10:10 AM",field:"Bang10",home:"Bangalow Dingoes",visit:"Pottsville Lynx"},
-  {comp:"Age 12 Div. 1",date:"Sat 20-Jun",time:"10:30 AM",field:"JSF",home:"Bangalow Black",visit:"Shores United"},
-  {comp:"Men's League 3",date:"Sat 20-Jun",time:"1:00 PM",field:"JSF",home:"Bangalow",visit:"Shores United"},
-  {comp:"Men's League 1",date:"Sat 20-Jun",time:"3:00 PM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Age 13 Div. 2 North",date:"Sun 21-Jun",time:"9:30 AM",field:"JSF",home:"Bangalow",visit:"Tumbulgum"},
-  {comp:"Girls Age 15",date:"Sun 21-Jun",time:"11:00 AM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Women's Championship League",date:"Sun 21-Jun",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"Byron Bay"},
-  {comp:"Age 12 Div. 1",date:"Sat 27-Jun",time:"9:00 AM",field:"JSF",home:"Bangalow Black",visit:"Byron Bay"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang7",home:"Bangalow Huskies",visit:"MBVFC"},
-  {comp:"Age 10 McGree",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang9",home:"Bangalow",visit:"Eureka Dingoes"},
-  {comp:"Age 5 Bos",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang3",home:"Bangalow",visit:"Lennox Tiger Sharks"},
-  {comp:"Age 6 Burgess",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang6",home:"Bangalow Kelpies",visit:"Byron Bay Pumas"},
-  {comp:"Age 8 Bos",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang8",home:"Bangalow Heelers",visit:"Lennox Whalers"},
-  {comp:"Girls Age 10 Foord",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang10",home:"Bangalow Dingoes",visit:"MBVFC"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang4",home:"Bangalow Dingoes",visit:"Byron Bay Leopards"},
-  {comp:"Girls Age 7 Wheeler",date:"Sat 27-Jun",time:"9:00 AM",field:"Bang5",home:"Bangalow Huskies",visit:"Byron Bay Lynx"},
-  {comp:"Girls Age 6 Raso",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang4",home:"Bangalow",visit:"Shores United"},
-  {comp:"Age 6 Burgess",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang5",home:"Bangalow Heelers",visit:"Lennox Bull Sharks"},
-  {comp:"Age 6 Metcalfe",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang3",home:"Bangalow Terriers",visit:"Ballina Bluebottles"},
-  {comp:"Age 7 Burgess",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang6",home:"Bangalow Terriers",visit:"Eureka"},
-  {comp:"Age 9 Irvine",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang7",home:"Bangalow Heelers",visit:"Byron Bay Tigers"},
-  {comp:"Age 9 Irvine",date:"Sat 27-Jun",time:"10:00 AM",field:"Bang8",home:"Bangalow Terriers",visit:"Shores United Crocs"},
-  {comp:"Age 10/11 SAP",date:"Sat 27-Jun",time:"10:10 AM",field:"Bang10",home:"Bangalow 10 SAP",visit:"MBVFC 10 SAP"},
-  {comp:"Girls Age 11 Carpenter",date:"Sat 27-Jun",time:"10:10 AM",field:"Bang9",home:"Bangalow",visit:"Pottsville Lynx"},
-  {comp:"Age 15 Div. 2",date:"Sat 27-Jun",time:"10:30 AM",field:"JSF",home:"Bangalow",visit:"Casino RSM Cobras"},
-  {comp:"Girls Age 8 Arnold",date:"Sat 27-Jun",time:"11:00 AM",field:"Bang7",home:"Bangalow Dingoes",visit:"Pottsville Beach"},
-  {comp:"Girls Age 9 Kerr",date:"Sat 27-Jun",time:"11:00 AM",field:"Bang8",home:"Bangalow",visit:"Goonellabah"},
-  {comp:"Age 10/11 SAP",date:"Sat 27-Jun",time:"11:20 AM",field:"Bang10",home:"Bangalow 11 SAP",visit:"Byron Bay 11 SAP"},
-  {comp:"Girls Age 10 Foord",date:"Sat 27-Jun",time:"11:20 AM",field:"Bang9",home:"Bangalow Huskies",visit:"Pottsville Lynx"},
-  {comp:"Age 12 Div. 1",date:"Sun 28-Jun",time:"11:00 AM",field:"JSF",home:"Bangalow Black",visit:"Alstonville Black"},
-  {comp:"Men's League 4",date:"Sun 28-Jun",time:"12:30 PM",field:"JSF",home:"Bangalow",visit:"Ballina"},
-  {comp:"Women's League 3",date:"Sun 28-Jun",time:"2:30 PM",field:"JSF",home:"Bangalow",visit:"Lismore Thistles"},
+// ── DATA ────────────────────────────────────────────────────────────────────
+const RAW=[
+  ["Age 8 Bos","Sat 2-May","9:00 AM","Bang8","Bangalow Terriers","Byron Bay Panthers"],
+  ["Age 8 McGree","Sat 2-May","9:30 AM","Bang7","Bangalow Beagles","TEBFC Narwhals"],
+  ["Age 12 Div. 1","Sat 2-May","10:30 AM","JSF","Bangalow Black","Bangalow Blue"],
+  ["Men's League 3","Sat 2-May","1:00 PM","JSF","Bangalow","Lennox Head"],
+  ["Men's League 1","Sat 2-May","3:00 PM","JSF","Bangalow","Alstonville"],
+  ["Age 13 Div. 2 North","Sat 9-May","9:00 AM","JSF","Bangalow","Alstonville Black"],
+  ["Age 15 Div. 2","Sat 9-May","9:00 AM","Bang2","Bangalow","Lennox Head"],
+  ["Girls Age 8 Arnold","Sat 9-May","9:00 AM","Bang7","Bangalow Dingoes","Byron Bay Wildcats"],
+  ["Age 5 Bos","Sat 9-May","9:00 AM","Bang3","Bangalow","Lennox Wobbegongs"],
+  ["Age 6 Burgess","Sat 9-May","9:00 AM","Bang4","Bangalow Heelers","Eureka"],
+  ["Age 6 Burgess","Sat 9-May","9:00 AM","Bang5","Bangalow Kelpies","Byron Bay Tigers"],
+  ["Age 6 Metcalfe","Sat 9-May","9:00 AM","Bang6","Bangalow Terriers","Byron Bay Panthers"],
+  ["Girls Age 10 Foord","Sat 9-May","9:00 AM","Bang9","Bangalow Huskies","MBVFC"],
+  ["Girls Age 10 Foord","Sat 9-May","9:00 AM","Bang10","Bangalow Dingoes","Byron Bay Leopards"],
+  ["Girls Age 9 Kerr","Sat 9-May","9:00 AM","Bang8","Bangalow","Lennox Head"],
+  ["Girls Age 6 Raso","Sat 9-May","10:00 AM","Bang6","Bangalow","MBVFC Blue"],
+  ["Age 7 Burgess","Sat 9-May","10:00 AM","Bang4","Bangalow Kelpies","Byron Bay Cougars"],
+  ["Age 8 Bos","Sat 9-May","10:00 AM","Bang8","Bangalow Terriers","Eureka"],
+  ["Age 9 Irvine","Sat 9-May","10:00 AM","Bang7","Bangalow Terriers","Pottsville Jaguars"],
+  ["Girls Age 7 Wheeler","Sat 9-May","10:00 AM","Bang5","Bangalow Huskies","MBVFC"],
+  ["Girls Age 7 Wheeler","Sat 9-May","10:00 AM","Bang3","Bangalow Dingoes","Byron Bay Wildcats"],
+  ["Age 10 McGree","Sat 9-May","10:10 AM","Bang10","Bangalow","Alstonville Magpies"],
+  ["Girls Age 11 Carpenter","Sat 9-May","10:10 AM","Bang9","Bangalow","MBVFC"],
+  ["Age 12 Div. 1","Sat 9-May","10:30 AM","JSF","Bangalow Blue","Goonellabah"],
+  ["Girls Age 8 Arnold","Sat 9-May","11:00 AM","Bang7","Bangalow Huskies","Pottsville Beach"],
+  ["Age 7 Burgess","Sat 9-May","11:00 AM","Bang3","Bangalow Terriers","Lennox Wobbegongs"],
+  ["Age 7 Metcalfe","Sat 9-May","11:00 AM","Bang4","Bangalow Heelers","Alstonville Stingrays"],
+  ["Age 9 Irvine","Sat 9-May","11:00 AM","Bang8","Bangalow Heelers","MBVFC Blue"],
+  ["Age 10/11 SAP","Sat 9-May","11:20 AM","Bang10","Bangalow 11 SAP","Pottsville Beach 10 SAP"],
+  ["Age 10/11 SAP","Sat 9-May","11:20 AM","Bang9","Bangalow 10 SAP","MBVFC 11 SAP"],
+  ["Men's League 7","Sat 9-May","1:00 PM","JSF","Bangalow","Alstonville"],
+  ["Men's League 4","Sat 9-May","3:00 PM","JSF","Bangalow","Lennox Head"],
+  ["Girls Age 12","Sun 10-May","9:30 AM","JSF","Bangalow","Goonellabah"],
+  ["Girls Age 15","Sun 10-May","11:00 AM","JSF","Bangalow","Casino RSM Cobras"],
+  ["Women's League 3","Sun 10-May","12:30 PM","JSF","Bangalow","Richmond Rovers"],
+  ["Women's Championship League","Sun 10-May","2:30 PM","JSF","Bangalow","Casino RSM Cobras"],
+  ["Girls Age 8 Arnold","Sat 16-May","9:00 AM","Bang7","Bangalow Dingoes","Bangalow Huskies"],
+  ["Age 6 Burgess","Sat 16-May","9:00 AM","Bang4","Bangalow Kelpies","Lennox Copper Sharks"],
+  ["Age 6 Metcalfe","Sat 16-May","9:00 AM","Bang3","Bangalow Terriers","Lennox Hammerheads"],
+  ["Age 7 Burgess","Sat 16-May","9:00 AM","Bang6","Bangalow Terriers","Bangalow Kelpies"],
+  ["Age 7 Metcalfe","Sat 16-May","9:00 AM","Bang5","Bangalow Heelers","Lennox Great White Sharks"],
+  ["Age 8 Bos","Sat 16-May","9:00 AM","Bang8","Bangalow Terriers","Bangalow Heelers"],
+  ["Girls Age 10 Foord","Sat 16-May","9:00 AM","Bang9","Bangalow Dingoes","Bangalow Huskies"],
+  ["Age 8 McGree","Sat 16-May","10:00 AM","Bang7","Bangalow Beagles","TEBFC Swordfish"],
+  ["Girls Age 7 Wheeler","Sat 16-May","10:00 AM","Bang3","Bangalow Dingoes","Shores United"],
+  ["Girls Age 11 Carpenter","Sat 16-May","10:10 AM","Bang9","Bangalow","Shores United"],
+  ["Age 13 Div. 2 North","Sat 16-May","11:00 AM","JSF","Bangalow","Byron Bay"],
+  ["Men's League 7","Sat 16-May","1:00 PM","JSF","Bangalow","Ballina"],
+  ["Men's League 1","Sat 16-May","3:00 PM","JSF","Bangalow","MBVFC"],
+  ["Age 15 Div. 2","Sun 17-May","9:00 AM","JSF","Bangalow","MBVFC"],
+  ["Age 13 Div. 2 North","Sun 17-May","10:30 AM","JSF","Bangalow","Ballina"],
+  ["Girls Age 12","Sun 17-May","11:50 AM","JSF","Bangalow","Pottsville Beach"],
+  ["Girls Age 6 Raso","Sat 23-May","9:00 AM","Bang4","Bangalow","Lennox Angel Sharks"],
+  ["Girls Age 8 Arnold","Sat 23-May","9:00 AM","Bang7","Bangalow Huskies","Byron Bay Wildcats"],
+  ["Age 5 Bos","Sat 23-May","9:00 AM","Bang3","Bangalow","Byron Bay Cougars"],
+  ["Age 6 Burgess","Sat 23-May","9:00 AM","Bang6","Bangalow Heelers","Bangalow Kelpies"],
+  ["Age 8 Bos","Sat 23-May","9:00 AM","Bang8","Bangalow Heelers","Eureka"],
+  ["Girls Age 10 Foord","Sat 23-May","9:00 AM","Bang9","Bangalow Huskies","Byron Bay Leopards"],
+  ["Girls Age 11 Carpenter","Sat 23-May","9:00 AM","Bang10","Bangalow","Byron Bay Wildcats"],
+  ["Girls Age 7 Wheeler","Sat 23-May","9:00 AM","Bang5","Bangalow Huskies","Bangalow Dingoes"],
+  ["Age 12 Div. 1","Sat 23-May","9:30 AM","Bang2","Bangalow Blue","Lennox Head"],
+  ["Age 15 Div. 2","Sat 23-May","9:30 AM","JSF","Bangalow","Lismore Thistles"],
+  ["Age 7 Burgess","Sat 23-May","10:00 AM","Bang3","Bangalow Kelpies","Lennox Wobbegongs"],
+  ["Age 9 Irvine","Sat 23-May","10:00 AM","Bang8","Bangalow Heelers","Pottsville Panthers"],
+  ["Girls Age 9 Kerr","Sat 23-May","10:00 AM","Bang7","Bangalow","Alstonville Komodos"],
+  ["Age 10 McGree","Sat 23-May","10:10 AM","Bang9","Bangalow","Lennox Wobbegongs"],
+  ["Age 10/11 SAP","Sat 23-May","10:10 AM","Bang10","Bangalow 11 SAP","MBVFC 11 SAP"],
+  ["Age 12 Div. 1","Sat 23-May","11:00 AM","JSF","Bangalow Black","Goonellabah"],
+  ["Age 13 Div. 2 North","Sat 23-May","11:00 AM","Bang2","Bangalow","Tumbulgum"],
+  ["Age 9 Irvine","Sat 23-May","11:00 AM","Bang7","Bangalow Terriers","Shores United Sharks"],
+  ["Age 10/11 SAP","Sat 23-May","11:20 AM","Bang9","Bangalow 10 SAP","Byron Bay 11 SAP"],
+  ["Men's League 4","Sat 23-May","1:00 PM","JSF","Bangalow","Alstonville"],
+  ["Men's League 3","Sat 23-May","3:00 PM","JSF","Bangalow","Goonellabah"],
+  ["Girls Age 15","Sun 24-May","9:30 AM","JSF","Bangalow","South Lismore"],
+  ["Girls Age 12","Sun 24-May","11:00 AM","JSF","Bangalow","Lennox Head Bluesharks"],
+  ["Women's Championship League","Sun 24-May","12:30 PM","JSF","Bangalow","South Lismore"],
+  ["Women's League 3","Sun 24-May","2:30 PM","JSF","Bangalow","Woodburn"],
+  ["Age 5 Bos","Sat 30-May","9:00 AM","Bang4","Bangalow","Ballina"],
+  ["Age 6 Burgess","Sat 30-May","9:00 AM","Bang3","Bangalow Kelpies","Suffolk Park"],
+  ["Age 6 Metcalfe","Sat 30-May","9:00 AM","Bang6","Bangalow Terriers","Byron Bay Lions"],
+  ["Age 7 Burgess","Sat 30-May","9:00 AM","Bang5","Bangalow Kelpies","Lennox Whalers"],
+  ["Age 8 McGree","Sat 30-May","9:00 AM","Bang8","Bangalow Beagles","Byron Bay Cougars"],
+  ["Girls Age 10 Foord","Sat 30-May","9:00 AM","Bang9","Bangalow Huskies","Byron Bay Lynx"],
+  ["Age 9 Irvine","Sat 30-May","9:00 AM","Bang7","Bangalow Terriers","Bangalow Heelers"],
+  ["Girls Age 11 Carpenter","Sat 30-May","9:00 AM","Bang10","Bangalow","Byron Bay Leopards"],
+  ["Age 7 Burgess","Sat 30-May","10:00 AM","Bang3","Bangalow Terriers","Suffolk Park"],
+  ["Age 7 Metcalfe","Sat 30-May","10:00 AM","Bang4","Bangalow Heelers","Lennox Tiger Sharks"],
+  ["Age 8 Bos","Sat 30-May","10:00 AM","Bang7","Bangalow Heelers","Shores United Crocs"],
+  ["Age 8 Bos","Sat 30-May","10:00 AM","Bang8","Bangalow Terriers","Lennox Wobbegongs"],
+  ["Age 10 McGree","Sat 30-May","10:10 AM","Bang9","Bangalow","Alstonville Lorikeets"],
+  ["Girls Age 10 Foord","Sat 30-May","10:10 AM","Bang10","Bangalow Dingoes","Pottsville Wildcats"],
+  ["Age 15 Div. 2","Sat 30-May","11:00 AM","JSF","Bangalow","Richmond Rovers"],
+  ["Girls Age 8 Arnold","Sat 30-May","11:00 AM","Bang7","Bangalow Huskies","Shores United"],
+  ["Age 10/11 SAP","Sat 30-May","11:20 AM","Bang9","Bangalow 10 SAP","Ballina 11 SAP"],
+  ["Men's League 7","Sat 30-May","1:00 PM","JSF","Bangalow","TEBFC"],
+  ["Men's League 4","Sat 30-May","3:00 PM","JSF","Bangalow","Lismore Workers"],
+  ["Age 13 Div. 2 North","Sun 31-May","9:30 AM","JSF","Bangalow","Byron Bay"],
+  ["Women's League 3","Sun 31-May","12:30 PM","JSF","Bangalow","Pottsville Beach"],
+  ["Age 12 Div. 1","Sat 13-Jun","9:00 AM","JSF","Bangalow Blue","Shores United"],
+  ["Girls Age 6 Raso","Sat 13-Jun","9:00 AM","Bang3","Bangalow","MBVFC Gold"],
+  ["Age 10/11 SAP","Sat 13-Jun","9:00 AM","Bang9","Bangalow 11 SAP","Bangalow 10 SAP"],
+  ["Age 6 Burgess","Sat 13-Jun","9:00 AM","Bang5","Bangalow Heelers","Byron Bay Tigers"],
+  ["Age 9 Irvine","Sat 13-Jun","9:00 AM","Bang8","Bangalow Heelers","Shores United Sharks"],
+  ["Girls Age 7 Wheeler","Sat 13-Jun","9:00 AM","Bang4","Bangalow Huskies","Byron Bay Wildcats"],
+  ["Girls Age 9 Kerr","Sat 13-Jun","9:00 AM","Bang7","Bangalow","TEBFC"],
+  ["Age 12 Div. 1","Sat 13-Jun","10:20 AM","JSF","Bangalow Black","Lennox Head"],
+  ["Age 13 Div. 2 North","Sat 13-Jun","11:40 AM","JSF","Bangalow","Pottsville Beach"],
+  ["Men's League 3","Sat 13-Jun","1:00 PM","JSF","Bangalow","Byron Bay"],
+  ["Men's League 1","Sat 13-Jun","3:00 PM","JSF","Bangalow","Italo Stars"],
+  ["Girls Age 15","Sun 14-Jun","9:30 AM","JSF","Bangalow","Lennox Head 1"],
+  ["Girls Age 12","Sun 14-Jun","11:00 AM","JSF","Bangalow","Alstonville"],
+  ["Women's League 3","Sun 14-Jun","12:30 PM","JSF","Bangalow","MBVFC"],
+  ["Women's Championship League","Sun 14-Jun","2:30 PM","JSF","Bangalow","Shores United"],
+  ["Age 15 Div. 2","Sat 20-Jun","9:00 AM","JSF","Bangalow","Alstonville"],
+  ["Girls Age 6 Raso","Sat 20-Jun","9:00 AM","Bang3","Bangalow","Byron Bay Wildcats"],
+  ["Girls Age 8 Arnold","Sat 20-Jun","9:00 AM","Bang7","Bangalow Huskies","Byron Bay Lynx"],
+  ["Girls Age 8 Arnold","Sat 20-Jun","9:00 AM","Bang8","Bangalow Dingoes","MBVFC"],
+  ["Age 10 McGree","Sat 20-Jun","9:00 AM","Bang9","Bangalow","Eureka Koalas"],
+  ["Age 6 Burgess","Sat 20-Jun","9:00 AM","Bang4","Bangalow Kelpies","Eureka"],
+  ["Age 7 Burgess","Sat 20-Jun","9:00 AM","Bang6","Bangalow Kelpies","Byron Bay Tigers"],
+  ["Girls Age 10 Foord","Sat 20-Jun","9:00 AM","Bang10","Bangalow Huskies","Byron Bay Wildcats"],
+  ["Girls Age 7 Wheeler","Sat 20-Jun","9:00 AM","Bang5","Bangalow Dingoes","MBVFC"],
+  ["Age 6 Burgess","Sat 20-Jun","10:00 AM","Bang3","Bangalow Heelers","Suffolk Park"],
+  ["Age 6 Metcalfe","Sat 20-Jun","10:00 AM","Bang6","Bangalow Terriers","Lennox Goblin Sharks"],
+  ["Age 7 Burgess","Sat 20-Jun","10:00 AM","Bang4","Bangalow Terriers","Byron Bay Panthers"],
+  ["Age 7 Metcalfe","Sat 20-Jun","10:00 AM","Bang5","Bangalow Heelers","Alstonville Swordfish"],
+  ["Girls Age 9 Kerr","Sat 20-Jun","10:00 AM","Bang7","Bangalow","Alstonville Blue Tongues"],
+  ["Age 10/11 SAP","Sat 20-Jun","10:10 AM","Bang9","Bangalow 10 SAP","Pottsville Beach 10 SAP"],
+  ["Girls Age 10 Foord","Sat 20-Jun","10:10 AM","Bang10","Bangalow Dingoes","Pottsville Lynx"],
+  ["Age 12 Div. 1","Sat 20-Jun","10:30 AM","JSF","Bangalow Black","Shores United"],
+  ["Men's League 3","Sat 20-Jun","1:00 PM","JSF","Bangalow","Shores United"],
+  ["Men's League 1","Sat 20-Jun","3:00 PM","JSF","Bangalow","Byron Bay"],
+  ["Age 13 Div. 2 North","Sun 21-Jun","9:30 AM","JSF","Bangalow","Tumbulgum"],
+  ["Girls Age 15","Sun 21-Jun","11:00 AM","JSF","Bangalow","Byron Bay"],
+  ["Women's Championship League","Sun 21-Jun","12:30 PM","JSF","Bangalow","Byron Bay"],
+  ["Age 12 Div. 1","Sat 27-Jun","9:00 AM","JSF","Bangalow Black","Byron Bay"],
+  ["Girls Age 8 Arnold","Sat 27-Jun","9:00 AM","Bang7","Bangalow Huskies","MBVFC"],
+  ["Age 10 McGree","Sat 27-Jun","9:00 AM","Bang9","Bangalow","Eureka Dingoes"],
+  ["Age 5 Bos","Sat 27-Jun","9:00 AM","Bang3","Bangalow","Lennox Tiger Sharks"],
+  ["Age 6 Burgess","Sat 27-Jun","9:00 AM","Bang6","Bangalow Kelpies","Byron Bay Pumas"],
+  ["Age 8 Bos","Sat 27-Jun","9:00 AM","Bang8","Bangalow Heelers","Lennox Whalers"],
+  ["Girls Age 10 Foord","Sat 27-Jun","9:00 AM","Bang10","Bangalow Dingoes","MBVFC"],
+  ["Girls Age 7 Wheeler","Sat 27-Jun","9:00 AM","Bang4","Bangalow Dingoes","Byron Bay Leopards"],
+  ["Girls Age 7 Wheeler","Sat 27-Jun","9:00 AM","Bang5","Bangalow Huskies","Byron Bay Lynx"],
+  ["Girls Age 6 Raso","Sat 27-Jun","10:00 AM","Bang4","Bangalow","Shores United"],
+  ["Age 6 Burgess","Sat 27-Jun","10:00 AM","Bang5","Bangalow Heelers","Lennox Bull Sharks"],
+  ["Age 6 Metcalfe","Sat 27-Jun","10:00 AM","Bang3","Bangalow Terriers","Ballina Bluebottles"],
+  ["Age 7 Burgess","Sat 27-Jun","10:00 AM","Bang6","Bangalow Terriers","Eureka"],
+  ["Age 9 Irvine","Sat 27-Jun","10:00 AM","Bang7","Bangalow Heelers","Byron Bay Tigers"],
+  ["Age 9 Irvine","Sat 27-Jun","10:00 AM","Bang8","Bangalow Terriers","Shores United Crocs"],
+  ["Age 10/11 SAP","Sat 27-Jun","10:10 AM","Bang10","Bangalow 10 SAP","MBVFC 10 SAP"],
+  ["Girls Age 11 Carpenter","Sat 27-Jun","10:10 AM","Bang9","Bangalow","Pottsville Lynx"],
+  ["Age 15 Div. 2","Sat 27-Jun","10:30 AM","JSF","Bangalow","Casino RSM Cobras"],
+  ["Girls Age 8 Arnold","Sat 27-Jun","11:00 AM","Bang7","Bangalow Dingoes","Pottsville Beach"],
+  ["Girls Age 9 Kerr","Sat 27-Jun","11:00 AM","Bang8","Bangalow","Goonellabah"],
+  ["Age 10/11 SAP","Sat 27-Jun","11:20 AM","Bang10","Bangalow 11 SAP","Byron Bay 11 SAP"],
+  ["Girls Age 10 Foord","Sat 27-Jun","11:20 AM","Bang9","Bangalow Huskies","Pottsville Lynx"],
+  ["Age 12 Div. 1","Sun 28-Jun","11:00 AM","JSF","Bangalow Black","Alstonville Black"],
+  ["Men's League 4","Sun 28-Jun","12:30 PM","JSF","Bangalow","Ballina"],
+  ["Women's League 3","Sun 28-Jun","2:30 PM","JSF","Bangalow","Lismore Thistles"],
 ];
 
-const FIELD_ORDER=['Bang3','Bang4','Bang5','Bang6','Bang7','Bang8','Bang9','Bang10','JSF','Bang2'];
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+const FO=['Bang3','Bang4','Bang5','Bang6','Bang7','Bang8','Bang9','Bang10','JSF','Bang2'];
+const FC={Bang3:'f-b3',Bang4:'f-b4',Bang5:'f-b5',Bang6:'f-b6',Bang7:'f-b7',Bang8:'f-b8',Bang9:'f-b9',Bang10:'f-b10',JSF:'f-jsf',Bang2:'f-b2'};
+const FCP={Bang3:'bg-b3 c-b3',Bang4:'bg-b4 c-b4',Bang5:'bg-b5 c-b5',Bang6:'bg-b6 c-b6',Bang7:'bg-b7 c-b7',Bang8:'bg-b8 c-b8',Bang9:'bg-b9 c-b9',Bang10:'bg-b10 c-b10',JSF:'bg-jsf c-jsf',Bang2:'bg-b2 c-b2'};
 
-function cleanComp(c){return c.replace(/ (Burgess|McGree|Foord|Irvine|Wheeler|Arnold|Carpenter|Raso|Kerr|Metcalfe|Bos)/g,'');}
+function cc(c){return c.replace(/ (Burgess|McGree|Foord|Irvine|Wheeler|Arnold|Carpenter|Raso|Kerr|Metcalfe|Bos)/g,'');}
+function tdn(t,comp){if(/Men's|Women's/i.test(comp))return comp;const c=cc(comp),g=/^Girls/i.test(c),am=c.match(/Age\s+[\d\/]+(?:\s+(?:Div\.\s*\d+(?:\s+\w+)?|SAP))?/i),age=am?am[0]:c,s=t.replace(/^Bangalow\s*/i,'').trim();return`${age} · ${g?'Girls · ':''}${s||'–'}`;}
+function tm(t){const[hm,ap]=t.split(' ');let[h,m]=hm.split(':').map(Number);if(ap==='PM'&&h!==12)h+=12;if(ap==='AM'&&h===12)h=0;return h*60+m;}
+function gd(ds){const mo={May:4,Jun:5,Jul:6},p=ds.replace(/^(Sat|Sun) /,'').split('-');return new Date(2026,mo[p[1]],parseInt(p[0]));}
+function wf(d){const day=d.getDay(),fri=new Date(d);fri.setDate(d.getDate()-(day>=5?day-5:day+2));return fri.toISOString().slice(0,10);}
+function fw(fs){const fri=new Date(fs+'T00:00:00'),thu=new Date(fri);thu.setDate(fri.getDate()+6);const f=d=>d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});return`${f(fri)} – ${f(thu)}`;}
 
-function teamDisplayName(teamStr,comp){
-  if(/Men's|Women's/i.test(comp))return comp;
-  const compClean=cleanComp(comp);
-  const isGirlsComp=/^Girls/i.test(compClean);
-  const ageMatch=compClean.match(/Age\s+[\d\/]+(?:\s+(?:Div\.\s*\d+(?:\s+\w+)?|SAP))?/i);
-  const agePart=ageMatch?ageMatch[0]:compClean;
-  const girlsPart=isGirlsComp?'Girls · ':'';
-  const stripped=teamStr.replace(/^Bangalow\s*/i,'').trim();
-  return `${agePart} · ${girlsPart}${stripped||'–'}`;
-}
+// ── BUILD WEEK MAP ───────────────────────────────────────────────────────────
+const wm={},wks=[];
+RAW.forEach(r=>{const d=gd(r[1]),wk=wf(d);if(!wm[wk]){wm[wk]=[];wks.push(wk);}wm[wk].push({comp:r[0],date:r[1],time:r[2],field:r[3],home:r[4],visit:r[5],dateObj:d});});
+wks.sort();
 
-function timeToMin(t){const[hm,ap]=t.split(' ');let[h,m]=hm.split(':').map(Number);if(ap==='PM'&&h!==12)h+=12;if(ap==='AM'&&h===12)h=0;return h*60+m;}
-
-function getDate(dateStr){const mo={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const p=dateStr.replace(/^(Sat|Sun) /,'').split('-');return new Date(2026,mo[p[1]],parseInt(p[0]));}
-
-function weekFriday(d){const day=d.getDay();const fri=new Date(d);fri.setDate(d.getDate()-(day>=5?day-5:day+2));return fri.toISOString().slice(0,10);}
-
-function fmtWeek(friStr){const fri=new Date(friStr+'T00:00:00');const thu=new Date(fri);thu.setDate(fri.getDate()+6);const f=d=>d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});return`${f(fri)} – ${f(thu)}`;}
-
-function fieldCls(f){const m={Bang3:'f-b3',Bang4:'f-b4',Bang5:'f-b5',Bang6:'f-b6',Bang7:'f-b7',Bang8:'f-b8',Bang9:'f-b9',Bang10:'f-b10',JSF:'f-jsf',Bang2:'f-b2'};return m[f]||'';}
-
-const weekMap={},weeks=[];
-RAW.forEach(r=>{const d=getDate(r.date);const wk=weekFriday(d);if(!weekMap[wk]){weekMap[wk]=[];weeks.push(wk);}weekMap[wk].push({...r,dateObj:d});});
-weeks.sort();
-
-const sel=document.getElementById('week-select');
-weeks.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=fmtWeek(w);sel.appendChild(o);});
+// ── SCHEDULE ─────────────────────────────────────────────────────────────────
+const wsel=document.getElementById('week-select');
+wks.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=fw(w);wsel.appendChild(o);});
 
 function renderSchedule(){
-  const wk=sel.value;const rows=weekMap[wk]||[];
-  const byDay={};rows.forEach(r=>{if(!byDay[r.date])byDay[r.date]=[];byDay[r.date].push(r);});
+  const wk=wsel.value,rows=wm[wk]||[],bd={};
+  rows.forEach(r=>{if(!bd[r.date])bd[r.date]=[];bd[r.date].push(r);});
   const out=document.getElementById('schedule-out');out.innerHTML='';
-  const dayOrder=Object.keys(byDay).sort((a,b)=>getDate(a)-getDate(b));
-  dayOrder.forEach(day=>{
-    const dayRows=byDay[day];
-    const usedFields=[...new Set(dayRows.map(r=>r.field).filter(f=>f))].sort((a,b)=>FIELD_ORDER.indexOf(a)-FIELD_ORDER.indexOf(b));
-    const usedTimes=[...new Set(dayRows.map(r=>r.time))].sort((a,b)=>timeToMin(a)-timeToMin(b));
-    const cellMap={};dayRows.forEach(r=>{if(!r.field)return;const k=r.field+'|'+r.time;if(!cellMap[k])cellMap[k]=[];cellMap[k].push(r);});
-    const noField=dayRows.filter(r=>!r.field);
+  Object.keys(bd).sort((a,b)=>gd(a)-gd(b)).forEach(day=>{
+    const dr=bd[day],uF=[...new Set(dr.map(r=>r.field).filter(f=>f))].sort((a,b)=>FO.indexOf(a)-FO.indexOf(b));
+    const uT=[...new Set(dr.map(r=>r.time))].sort((a,b)=>tm(a)-tm(b)),cM={};
+    dr.forEach(r=>{if(!r.field)return;const k=r.field+'|'+r.time;if(!cM[k])cM[k]=[];cM[k].push(r);});
     const lbl=document.createElement('div');lbl.className='day-label';
     lbl.textContent=`${day.startsWith('Sat')?'Saturday':'Sunday'} ${day.replace(/^(Sat|Sun) /,'').replace('-',' ')}`;
     out.appendChild(lbl);
     const wrap=document.createElement('div');wrap.className='section-wrap';
-    const table=document.createElement('table');table.className='grid-table';
-    const thead=document.createElement('thead');
-    const hr=document.createElement('tr');
-    hr.innerHTML=`<th class="field-col">Field</th>`+usedTimes.map(t=>`<th>${t}</th>`).join('');
-    thead.appendChild(hr);table.appendChild(thead);
-    const tbody=document.createElement('tbody');
-    usedFields.forEach(field=>{
+    const tbl=document.createElement('table');tbl.className='grid-table';
+    tbl.innerHTML=`<thead><tr><th class="field-col">Field</th>${uT.map(t=>`<th>${t}</th>`).join('')}</tr></thead>`;
+    const tb=document.createElement('tbody');
+    uF.forEach(field=>{
       const tr=document.createElement('tr');
-      const fc=document.createElement('td');fc.className='field-cell';
-      fc.innerHTML=`<span class="field-badge ${fieldCls(field)}">${field}</span>`;
-      tr.appendChild(fc);
-      usedTimes.forEach(time=>{
-        const td=document.createElement('td');
-        const items=cellMap[field+'|'+time]||[];
-        td.innerHTML=items.map(r=>`<div class="cell-item"><div class="cell-comp">${cleanComp(r.comp)}</div><div class="cell-home">${r.home}</div><div class="cell-vs">v</div><div class="cell-visit">${r.visit}</div></div>`).join('');
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
+      tr.innerHTML=`<td class="field-cell"><span class="field-badge ${FC[field]||''}">${field}</span></td>`+
+        uT.map(time=>{const items=cM[field+'|'+time]||[];return`<td>${items.map(r=>`<div class="cell-item"><div class="cell-comp">${cc(r.comp)}</div><div class="cell-home">${r.home}</div><div class="cell-vs">v</div><div class="cell-visit">${r.visit}</div></div>`).join('')}</td>`;}).join('');
+      tb.appendChild(tr);
     });
-    table.appendChild(tbody);wrap.appendChild(table);out.appendChild(wrap);
-    if(noField.length){
-      const note=document.createElement('div');note.className='no-field-note';
-      note.innerHTML='<strong>No field assigned:</strong> '+noField.map(r=>`${cleanComp(r.comp)} — ${r.home} v ${r.visit} (${r.time})`).join(' · ');
-      out.appendChild(note);
-    }
+    tbl.appendChild(tb);wrap.appendChild(tbl);out.appendChild(wrap);
+    const nf=dr.filter(r=>!r.field);
+    if(nf.length){const n=document.createElement('div');n.className='no-field-note';n.innerHTML='<strong>No field assigned:</strong> '+nf.map(r=>`${cc(r.comp)} — ${r.home} v ${r.visit} (${r.time})`).join(' · ');out.appendChild(n);}
   });
 }
-
 renderSchedule();
 
-function getAllBangalowTeams(){
-  const map={};
-  RAW.forEach(r=>{[r.home,r.visit].forEach(t=>{if(t.toLowerCase().includes('bangalow')){const comp=cleanComp(r.comp);const key=t+'||'+comp;if(!map[key])map[key]={team:t,comp,display:teamDisplayName(t,comp)};}});});
-  return Object.values(map).sort((a,b)=>a.display.localeCompare(b.display));
-}
+// ── COMPARE ──────────────────────────────────────────────────────────────────
+function gbt(){const map={};RAW.forEach(r=>{[r[4],r[5]].forEach(t=>{if(t.toLowerCase().includes('bangalow')){const comp=cc(r[0]),key=t+'||'+comp;if(!map[key])map[key]={team:t,comp,display:tdn(t,comp)};}});});return Object.values(map).sort((a,b)=>a.display.localeCompare(b.display));}
+const at=gbt(),tsw=document.getElementById('team-selects');
+for(let i=0;i<4;i++){const wrap=document.createElement('div');wrap.className='compare-select-wrap';wrap.innerHTML=`<label>Team ${i+1}</label>`;const s=document.createElement('select');s.id=`ts-${i}`;s.onchange=rc;s.innerHTML=`<option value="">— select —</option>`;at.forEach(t=>{const o=document.createElement('option');o.value=JSON.stringify({team:t.team,comp:t.comp,display:t.display});o.textContent=t.display;s.appendChild(o);});wrap.appendChild(s);tsw.appendChild(wrap);}
 
-const allTeams=getAllBangalowTeams();
-const teamSelWrap=document.getElementById('team-selects');
-for(let i=0;i<4;i++){
-  const wrap=document.createElement('div');wrap.className='compare-select-wrap';
-  wrap.innerHTML=`<label>Team ${i+1}</label>`;
-  const s=document.createElement('select');s.id=`ts-${i}`;s.onchange=renderCompare;
-  s.innerHTML=`<option value="">— select —</option>`;
-  allTeams.forEach(t=>{const o=document.createElement('option');o.value=JSON.stringify({team:t.team,comp:t.comp,display:t.display});o.textContent=t.display;s.appendChild(o);});
-  wrap.appendChild(s);teamSelWrap.appendChild(wrap);
+function rc(){
+  const s4=Array.from({length:4},(_,i)=>{const v=document.getElementById(`ts-${i}`).value;return v?JSON.parse(v):null;});
+  const th=document.getElementById('compare-head'),tb=document.getElementById('compare-body');th.innerHTML='';tb.innerHTML='';
+  const hr=document.createElement('tr');hr.innerHTML=`<th style="width:110px">Week</th>`+s4.map((s,i)=>`<th style="font-size:11px">${s?s.display:`Team ${i+1}`}</th>`).join('');th.appendChild(hr);
+  wks.forEach(wk=>{const wr=wm[wk]||[],tr=document.createElement('tr');tr.innerHTML=`<td class="week-cell">${fw(wk)}</td>`;
+    s4.forEach(s=>{const td=document.createElement('td');if(!s){td.innerHTML=`<span class="away-cell">—</span>`;tr.appendChild(td);return;}
+      const mx=wr.filter(r=>cc(r.comp)===s.comp&&(r.home===s.team||r.visit===s.team));
+      if(!mx.length)td.innerHTML=`<span class="away-cell">AWAY</span>`;
+      else td.innerHTML=mx.map(r=>{const isH=r.home===s.team,opp=isH?r.visit:r.home;return`<div class="fixture-card"><div class="opp">${opp}</div><div class="meta">${r.time}${r.field?' &middot; '+r.field:''}<span class="${isH?'home-tag':'away-tag'}">${isH?'H':'A'}</span></div></div>`;}).join('');
+      tr.appendChild(td);});tb.appendChild(tr);});
 }
+rc();
 
-function renderCompare(){
-  const selected=Array.from({length:4},(_,i)=>{const v=document.getElementById(`ts-${i}`).value;return v?JSON.parse(v):null;});
-  const thead=document.getElementById('compare-head');const tbody=document.getElementById('compare-body');
-  thead.innerHTML='';tbody.innerHTML='';
-  const hr=document.createElement('tr');
-  hr.innerHTML=`<th style="width:110px">Week</th>`+selected.map((s,i)=>`<th>${s?s.display:`Team ${i+1}`}</th>`).join('');
-  thead.appendChild(hr);
-  weeks.forEach(wk=>{
-    const wkRows=weekMap[wk]||[];
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="week-cell">${fmtWeek(wk)}</td>`;
-    selected.forEach(s=>{
-      const td=document.createElement('td');
-      if(!s){td.innerHTML=`<span class="away-cell">—</span>`;tr.appendChild(td);return;}
-      const matches=wkRows.filter(r=>cleanComp(r.comp)===s.comp&&(r.home===s.team||r.visit===s.team));
-      if(!matches.length){td.innerHTML=`<span class="away-cell">AWAY</span>`;}
-      else{td.innerHTML=matches.map(r=>{const isH=r.home===s.team;const opp=isH?r.visit:r.home;return`<div class="fixture-card"><div class="opp">${opp}</div><div class="meta">${r.time}${r.field?' &middot; '+r.field:''}<span class="${isH?'home-tag':'away-tag'}">${isH?'H':'A'}</span></div></div>`;}).join('');}
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
+// ── FIELD REPORT ─────────────────────────────────────────────────────────────
+const WEEKS=[
+  {label:'1–7 May',    days:[{label:'Sat 2 May',  c:{Bang7:1,Bang8:1,JSF:3}}]},
+  {label:'8–14 May',   days:[{label:'Sat 9 May',  c:{Bang3:3,Bang4:3,Bang5:2,Bang6:2,Bang7:3,Bang8:3,Bang9:3,Bang10:3,JSF:4,Bang2:1}},{label:'Sun 10 May',c:{JSF:4}}]},
+  {label:'15–21 May',  days:[{label:'Sat 16 May', c:{Bang3:2,Bang4:1,Bang5:1,Bang6:1,Bang7:2,Bang8:1,Bang9:2,JSF:3}},{label:'Sun 17 May',c:{JSF:3}}]},
+  {label:'22–28 May',  days:[{label:'Sat 23 May', c:{Bang3:2,Bang4:1,Bang5:1,Bang6:1,Bang7:3,Bang8:2,Bang9:3,Bang10:2,JSF:4,Bang2:2}},{label:'Sun 24 May',c:{JSF:4}}]},
+  {label:'29 May–4 Jun',days:[{label:'Sat 30 May',c:{Bang3:2,Bang4:2,Bang5:1,Bang6:1,Bang7:3,Bang8:2,Bang9:3,Bang10:2,JSF:3}},{label:'Sun 31 May',c:{JSF:2}}]},
+  {label:'12–18 Jun',  days:[{label:'Sat 13 Jun', c:{Bang3:1,Bang4:1,Bang5:1,Bang7:1,Bang8:1,Bang9:1,JSF:5}},{label:'Sun 14 Jun',c:{JSF:4}}]},
+  {label:'19–25 Jun',  days:[{label:'Sat 20 Jun', c:{Bang3:2,Bang4:2,Bang5:2,Bang6:2,Bang7:2,Bang8:1,Bang9:2,Bang10:2,JSF:4}},{label:'Sun 21 Jun',c:{JSF:3}}]},
+  {label:'26 Jun–2 Jul',days:[{label:'Sat 27 Jun',c:{Bang3:2,Bang4:2,Bang5:2,Bang6:2,Bang7:3,Bang8:3,Bang9:3,Bang10:3,JSF:2}},{label:'Sun 28 Jun',c:{JSF:3}}]},
+];
+const GT={Bang3:14,Bang4:12,Bang5:10,Bang6:9,Bang7:18,Bang8:14,Bang9:17,Bang10:12,JSF:51,Bang2:3};
+const RFIELDS=['Bang3','Bang4','Bang5','Bang6','Bang7','Bang8','Bang9','Bang10','JSF','Bang2'];
+
+function rcell(v,f){if(!v)return`<td class="zero">–</td>`;return`<td><span class="pill ${FCP[f]||''}">${v}</span></td>`;}
+let rhtml='';
+WEEKS.forEach(wk=>{
+  const wc={};RFIELDS.forEach(f=>{wc[f]=wk.days.reduce((a,d)=>a+(d.c[f]||0),0);});
+  const wt=Object.values(wc).reduce((a,b)=>a+b,0);
+  rhtml+=`<tr class="week-row"><td class="label-col">${wk.label}</td>${RFIELDS.map(f=>rcell(wc[f]||0,f)).join('')}<td class="row-total">${wt}</td></tr>`;
+  wk.days.forEach(day=>{
+    const dt=Object.values(day.c).reduce((a,b)=>a+b,0);
+    rhtml+=`<tr><td class="day-indent">${day.label}</td>${RFIELDS.map(f=>rcell(day.c[f]||0,f)).join('')}<td class="row-total">${dt}</td></tr>`;
   });
-}
+});
+rhtml+=`<tr class="grand-total"><td class="label-col">Grand total</td>${RFIELDS.map(f=>`<td>${GT[f]||0}</td>`).join('')}<td>160</td></tr>`;
+document.getElementById('report-tbody').innerHTML=rhtml;
 
-renderCompare();
-
+// ── TAB SWITCHING ────────────────────────────────────────────────────────────
 function showTab(t){
-  document.getElementById('tab-schedule').style.display=t==='schedule'?'':'none';
-  document.getElementById('tab-compare').style.display=t==='compare'?'':'none';
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='schedule')||(i===1&&t==='compare')));
+  ['schedule','compare','report'].forEach(id=>{document.getElementById('tab-'+id).style.display=id===t?'':'none';});
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['schedule','compare','report'][i]===t));
 }
 </script>
 </body>
