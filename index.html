@@ -67,6 +67,7 @@
   .week-cell { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; background: #f7f6f1 !important; }
   .fixture-card .opp { font-size: 12px; color: #1a1a1a; line-height: 1.4; font-weight: 500; }
   .fixture-card .meta { font-size: 10px; color: #888; margin-top: 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .date-tag { font-size: 10px; font-weight: 600; color: #555; white-space: nowrap; }
   .away-cell { font-size: 12px; color: #bbb; font-style: italic; }
   .home-tag { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: #e2f5d8; color: #2a6e14; font-weight: 600; }
   .away-tag { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: #eee; color: #666; font-weight: 600; }
@@ -397,7 +398,7 @@ function rc(){
     s4.forEach(s=>{const td=document.createElement('td');if(!s){td.innerHTML=`<span class="away-cell">—</span>`;tr.appendChild(td);return;}
       const mx=wr.filter(r=>cc(r.comp)===s.comp&&(r.home===s.team||r.visit===s.team));
       if(!mx.length)td.innerHTML=`<span class="away-cell">AWAY</span>`;
-      else td.innerHTML=mx.map(r=>{const isH=r.home===s.team,opp=isH?r.visit:r.home;return`<div class="fixture-card"><div class="opp">${opp}</div><div class="meta">${r.time}${r.field?' &middot; '+r.field:''}<span class="${isH?'home-tag':'away-tag'}">${isH?'H':'A'}</span></div></div>`;}).join('');
+      else td.innerHTML=mx.map(r=>{const isH=r.home===s.team,opp=isH?r.visit:r.home,dayLabel=r.date.replace(/^(Sat|Sun) /,m=>m.trim()==='Sat'?'Sat ':'Sun ');return`<div class="fixture-card"><div class="opp">${opp}</div><div class="meta"><span class="date-tag">${r.date.replace(/^(Sat|Sun) /,'').replace('-',' ')} &middot; ${r.date.startsWith('Sat')?'Sat':'Sun'}</span>${r.time}${r.field?' &middot; '+r.field:''}<span class="${isH?'home-tag':'away-tag'}">${isH?'H':'A'}</span></div></div>`;}).join('');
       tr.appendChild(td);});tb.appendChild(tr);});
 }
 rc();
