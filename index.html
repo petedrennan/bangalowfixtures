@@ -64,7 +64,7 @@
   .compare-table td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
   .compare-table tr:last-child td { border-bottom: none; }
   .compare-table tr:hover td { background: #f5faff; }
-  .week-cell { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; background: #f3f8fd !important; }
+  .week-cell { font-size: 11px; font-weight: 600; color: #888; background: #f3f8fd !important; line-height: 1.6; }
   .fixture-card .opp { font-size: 12px; color: #1a1a1a; line-height: 1.4; font-weight: 500; }
   .fixture-card .meta { font-size: 10px; color: #888; margin-top: 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
   .date-tag { font-size: 10px; font-weight: 600; color: #555; white-space: nowrap; }
@@ -337,7 +337,7 @@
 <script>
 // ── DATA ────────────────────────────────────────────────────────────────────
 const RAW=[
-  ["Age 8 Bos","Sat 2-May","9:00 AM","Bang8","Bangalow Terriers","Byron Bay Panthers"],
+  ["Age 8 Bos","Sat 2-May","9:30 AM","Bang8","Bangalow Terriers","Byron Bay Panthers"],
   ["Age 8 McGree","Sat 2-May","9:30 AM","Bang7","Bangalow Beagles","TEBFC Narwhals"],
   ["Age 12 Div. 1","Sat 2-May","10:30 AM","JSF","Bangalow Black","Bangalow Blue"],
   ["Men's League 3","Sat 2-May","1:00 PM","JSF","Bangalow","Lennox Head"],
@@ -509,7 +509,8 @@ function tdn(t,comp){if(/Men's|Women's/i.test(comp))return comp;const c=cc(comp)
 function tm(t){const[hm,ap]=t.split(' ');let[h,m]=hm.split(':').map(Number);if(ap==='PM'&&h!==12)h+=12;if(ap==='AM'&&h===12)h=0;return h*60+m;}
 function gd(ds){const mo={May:4,Jun:5,Jul:6},p=ds.replace(/^(Sat|Sun) /,'').split('-');return new Date(2026,mo[p[1]],parseInt(p[0]));}
 function wf(d){const day=d.getDay(),fri=new Date(d);fri.setDate(d.getDate()-(day>=5?day-5:day+2));return fri.toISOString().slice(0,10);}
-function fw(fs){const fri=new Date(fs+'T00:00:00'),thu=new Date(fri);thu.setDate(fri.getDate()+6);const f=d=>d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});return`${f(fri)} – ${f(thu)}`;}
+function fw(fs){const fri=new Date(fs+'T00:00:00'),thu=new Date(fri);thu.setDate(fri.getDate()+6);const sat=new Date(fri);sat.setDate(fri.getDate()+1);const f=d=>d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});return`Sat ${f(sat)}  ·  ${f(fri)}–${f(thu)}`;}
+function fwHTML(fs){const fri=new Date(fs+'T00:00:00'),thu=new Date(fri);thu.setDate(fri.getDate()+6);const sat=new Date(fri);sat.setDate(fri.getDate()+1);const f=d=>d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});return`<span style="color:#0e4a7a;font-weight:700;font-size:12px">Sat ${f(sat)}</span><br><span style="font-size:10px;font-weight:400">${f(fri)}–${f(thu)}</span>`;}
 
 // ── BUILD WEEK MAP ───────────────────────────────────────────────────────────
 const wm={},wks=[];
@@ -556,8 +557,8 @@ for(let i=0;i<4;i++){const wrap=document.createElement('div');wrap.className='co
 function rc(){
   const s4=Array.from({length:4},(_,i)=>{const v=document.getElementById(`ts-${i}`).value;return v?JSON.parse(v):null;});
   const th=document.getElementById('compare-head'),tb=document.getElementById('compare-body');th.innerHTML='';tb.innerHTML='';
-  const hr=document.createElement('tr');hr.innerHTML=`<th style="width:110px">Week</th>`+s4.map((s,i)=>`<th style="font-size:11px">${s?s.display:`Team ${i+1}`}</th>`).join('');th.appendChild(hr);
-  wks.forEach(wk=>{const wr=wm[wk]||[],tr=document.createElement('tr');tr.innerHTML=`<td class="week-cell">${fw(wk)}</td>`;
+  const hr=document.createElement('tr');hr.innerHTML=`<th style="width:160px">Week</th>`+s4.map((s,i)=>`<th style="font-size:11px">${s?s.display:`Team ${i+1}`}</th>`).join('');th.appendChild(hr);
+  wks.forEach(wk=>{const wr=wm[wk]||[],tr=document.createElement('tr');tr.innerHTML=`<td class="week-cell">${fwHTML(wk)}</td>`;
     s4.forEach(s=>{const td=document.createElement('td');if(!s){td.innerHTML=`<span class="away-cell">—</span>`;tr.appendChild(td);return;}
       const mx=wr.filter(r=>cc(r.comp)===s.comp&&(r.home===s.team||r.visit===s.team));
       if(!mx.length)td.innerHTML=`<span class="away-cell">AWAY</span>`;
