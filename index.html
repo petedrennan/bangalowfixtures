@@ -223,6 +223,7 @@
   </div>
 </div>
 
+<script src="fixtures.js"></script>
 <script>
 let RAW=[];
 
@@ -536,24 +537,39 @@ function buildRAW(rows){
   return recs.map(x=>x.row);
 }
 
+function pickDefaultWeek(){          // current week, else next upcoming, else last
+  const opts=[...wsel.options].map(o=>o.value);
+  if(!opts.length)return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  for(const wk of opts){
+    const end=new Date(wk+'T00:00:00');end.setDate(end.getDate()+6); // Fri..Thu window
+    if(end>=today)return wk;
+  }
+  return opts[opts.length-1];
+}
 function initApp(){
   buildAllWks();
   buildAllTeams();
   buildTeamSelectors();
   rebuildWeekSelector();
+  const def=pickDefaultWeek();
+  if(def)wsel.value=def;
   renderSchedule();
   rc();
   renderReport();
 }
 
+function loadFromText(text){ RAW=buildRAW(parseCSV(text)); initApp(); }
 fetch('fixtures.csv',{cache:'no-store'})
   .then(resp=>{ if(!resp.ok) throw new Error('HTTP '+resp.status); return resp.text(); })
-  .then(text=>{ RAW=buildRAW(parseCSV(text)); initApp(); })
+  .then(loadFromText)
   .catch(err=>{
+    // Opened directly from disk (file://) or CSV missing: use the fixtures.js fallback.
+    if(typeof window!=='undefined' && typeof window.FIXTURES_CSV==='string'){ loadFromText(window.FIXTURES_CSV); return; }
     const c=document.querySelector('.container');
     if(c) c.insertAdjacentHTML('afterbegin',
       '<div style="background:#fdecea;border:1.5px solid #d9534f;color:#8a1f1f;padding:12px 16px;border-radius:8px;margin-bottom:1rem;font-size:13px">'+
-      'Could not load <strong>fixtures.csv</strong> ('+err.message+'). Make sure the file sits beside this page and is served over http(s).</div>');
+      'Could not load fixtures ('+err.message+'). Make sure <strong>fixtures.csv</strong> (or <strong>fixtures.js</strong>) sits beside this page.</div>');
     console.error(err);
   });
 </script>
